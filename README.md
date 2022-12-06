@@ -1,5 +1,5 @@
 "# Image-Processing-Application" 
-a PPM and PGM image processing desktop application application made using JavaFx.
+a PPM and PGM image processing desktop application made using JavaFx.
 
 requirements :
 - java: version min 11.0.12
