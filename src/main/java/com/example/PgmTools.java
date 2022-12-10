@@ -241,4 +241,73 @@ public class PgmTools {
         }
         return d2;
     }
+
+    public static int [] histogramGrid() {
+        int [][] tab = d ;
+        int[] tabPixel=new int[256];
+        for (int j = 0; j <= 255; j++){
+            tabPixel[j]=0;
+        } 
+        for  (int j = 0; j < tab.length; j++){
+            for  (int i = 0; i < tab[j].length; i++){
+               tabPixel[tab[j][i]]++ ;
+            }
+        }
+        return tabPixel ;
+    }
+    public static double[] histogramCumulatif() {
+        int [][] tab = d ;
+        int width = tab.length ;
+        int height = tab[0].length;
+        int[] tabPixel=new int[256];
+        for (int j = 0; j <= 255; j++){
+            tabPixel[j]=0;
+        } 
+        for  (int j = 0; j <width; j++){
+            for  (int i = 0; i < height; i++){
+               tabPixel[tab[j][i]]++ ;
+            }
+        }
+        double[] tabCumul=new double[256];
+        tabCumul[0]=tabPixel[0];
+        for  (int j = 1; j < tabPixel.length; j++){
+            tabCumul[j]=tabCumul[j-1]+tabPixel[j];
+        }
+        for (int j = 0; j <= 255; j++){
+            tabCumul[j]=tabCumul[j]/(height*width);
+        }
+        return tabCumul;
+    }
+
+    public static void histogrammeEgalise() {
+        int[] h = histogramGrid();
+        double [] tabcumul = histogramCumulatif() ;
+        int total = d.length * d[0].length;
+        double [] a = new double[tabcumul.length];
+        for(int i=0; i<tabcumul.length ; i++){
+            a[i] =  (tabcumul.length - 1)*tabcumul[i];
+        }
+        int hp = total / tabcumul.length;
+        int [] n1 = new int[tabcumul.length];
+
+        for(int i=0 ; i<n1.length ; i++) {
+            n1[i] = (int) a[i];
+        }
+        int []heg = new int[tabcumul.length] ;
+        for(int i=0 ; i<tabcumul.length ; i++) {
+            int val = 0;
+            for(int j=0 ; j<n1.length ; j++) {
+                if(n1[j] == i) 
+                    val += h[j];
+            }
+            heg[i] = val ;
+        }
+        for(int i= 0 ; i<d.length ; i++) {
+            for(int j= 0 ; j<d[0].length ; j++) {
+                int pixel = d[i][j] ;
+                pixel = n1[pixel] ;
+                d[i][j] = pixel ;
+            }
+        }
+    }
 }

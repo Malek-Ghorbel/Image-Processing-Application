@@ -52,10 +52,44 @@ public class PgmUI extends ImageUI  {
         root.getChildren().remove(hbox5);
     }
 
+    private static HBox bruitHBox(VBox root) {
+        hbox = new HBox();
+        hbox.setSpacing(10);
+        Button button= new Button("faire un bruit");
+        Button button2= new Button("egalisation histogramme");
+        Button resetButton= new Button("reset");
+        
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                PgmTools.bruit();
+                updateImage();
+            }
+        });
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                PgmTools.histogrammeEgalise();
+                updateImage();
+            }
+        });
+        resetButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                imageView.setImage(PgmTools.readImage(file));
+            }
+        });
+        button.setStyle("-fx-font: 16 arial; -fx-base: #b6e7c9;");
+        button2.setStyle("-fx-font: 16 arial; -fx-base: #b6e7c9;");
+        resetButton.setStyle("-fx-font: 16 arial; -fx-base: #E06666;");
+        
+        hbox.getChildren().add(button);
+        hbox.getChildren().add(button2);
+        hbox.getChildren().add(resetButton);
+        return hbox;
+    }
+
     private static HBox filtreMoyHBox(VBox root) {
         hbox2 = new HBox();
         hbox2.setSpacing(10);
-        Text label = new Text("filtre moy :");
+        Text label = new Text("filtre moyenne :");
         
         label.setStyle("-fx-font: 18 arial; ");
         Button button= new Button("apply");
@@ -91,35 +125,10 @@ public class PgmUI extends ImageUI  {
         hbox2.getChildren().add(label);
         hbox2.getChildren().add(seuil);
         hbox2.getChildren().add(button);
-        hbox2.getChildren().add(button2);
-        hbox2.getChildren().add(rapport);
+      //  hbox2.getChildren().add(button2);
+     //   hbox2.getChildren().add(rapport);
         
         return hbox2;
-    }
-
-    private static HBox bruitHBox(VBox root) {
-        hbox = new HBox();
-        hbox.setSpacing(10);
-        Button button= new Button("faire un bruit");
-        Button resetButton= new Button("reset");
-        
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                PgmTools.bruit();
-                updateImage();
-            }
-        });
-        resetButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                imageView.setImage(PgmTools.readImage(file));
-            }
-        });
-        button.setStyle("-fx-font: 16 arial; -fx-base: #b6e7c9;");
-        resetButton.setStyle("-fx-font: 16 arial; -fx-base: #E06666;");
-        
-        hbox.getChildren().add(button);
-        hbox.getChildren().add(resetButton);
-        return hbox;
     }
 
     private static HBox filtreMedianHBox(VBox root) {
@@ -161,8 +170,8 @@ public class PgmUI extends ImageUI  {
         hbox3.getChildren().add(label);
         hbox3.getChildren().add(seuil);
         hbox3.getChildren().add(button);
-        hbox3.getChildren().add(button2);
-        hbox3.getChildren().add(rapport);
+     //   hbox3.getChildren().add(button2);
+      //  hbox3.getChildren().add(rapport);
         return hbox3;
     }
     
@@ -198,16 +207,16 @@ public class PgmUI extends ImageUI  {
         Button button= new Button("apply");
         TextField a1 = new TextField ();
         a1.setPromptText("x1");
-        a1.setMaxWidth(40);
+        a1.setMaxWidth(30);
         TextField b1 = new TextField ();
         b1.setPromptText("y1");
-        b1.setMaxWidth(40);
+        b1.setMaxWidth(30);
         TextField a2 = new TextField ();
         a2.setPromptText("x2");
-        a2.setMaxWidth(40);
+        a2.setMaxWidth(30);
         TextField b2 = new TextField ();
         b2.setPromptText("y2");
-        b2.setMaxWidth(40);
+        b2.setMaxWidth(30);
         Text error = new Text("please provide all the values");
         error.setFill(Color.RED);
         button.setOnAction(new EventHandler<ActionEvent>() {
