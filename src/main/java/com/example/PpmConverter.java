@@ -70,13 +70,13 @@ public class PpmConverter {
         return image ;
     }
 
-    public static int[][][] seuillerVariante(int seuil,boolean ou) {
+    public static int[][][] seuillerVariante(int seuilR, int seuilG, int seuilB,boolean ou) {
         int r=0 , g=1 , b=2 ;
         int [][][] image = d;
         for(int i =0 ; i<image.length; i++) {
             for(int j =0 ; j<image[0].length ; j++) {
                 if (ou ) {
-                    if(image[i][j][r] >= seuil || image[i][j][g] >= seuil || image[i][j][b] >= seuil ) {
+                    if(image[i][j][r] >= seuilR || image[i][j][g] >= seuilG || image[i][j][b] >= seuilB ) {
                         image[i][j][r] = 255 ;
                         image[i][j][g] = 255 ;
                         image[i][j][b] = 255 ;
@@ -90,7 +90,7 @@ public class PpmConverter {
                     
                 } 
                 else {
-                    if(image[i][j][r] >= seuil && image[i][j][g] >= seuil && image[i][j][b] >= seuil ) {
+                    if(image[i][j][r] >= seuilR && image[i][j][g] >= seuilG && image[i][j][b] >= seuilB ) {
                         image[i][j][r] = 255 ;
                         image[i][j][g] = 255 ;
                         image[i][j][b] = 255 ;
@@ -104,6 +104,88 @@ public class PpmConverter {
             }
         }
         return image ;
+    }
+
+    public static double otsuRGB( int color) {
+        int bins_num = 256;
+        int [][][] testImage = d ;
+        // Get the histogram
+         double[] histogram = new double[256];
+        
+        // initialize all intensity values to 0
+        for(int i = 0; i < 256; i++)
+            histogram[i] = 0;
+        
+        // calculate the no of pixels for each intensity values
+        for(int y = 0; y < testImage.length; y++)
+            for(int x = 0; x < testImage[0].length; x++)
+                histogram[(int)testImage[y][x][color]]++;
+        
+        // Calculate the bin_edges
+        double[] bin_edges = new double[256];
+        bin_edges[0] = 0.0;
+        double increment = 0.99609375;
+        for(int i = 1; i < 256; i++)
+            bin_edges[i] = bin_edges[i-1] + increment;
+        
+        // Calculate bin_mids
+        double[] bin_mids= new double[256];
+        for(int i = 0; i < 255; i++)
+        bin_mids[i] = (bin_edges[i] + bin_edges[i+1])/2;
+        
+        // Iterate over all thresholds (indices) and get the probabilities weight1, weight2
+        double[]  weight1= new double[256];
+        weight1[0] = histogram[0];
+        for(int i = 1; i < 256; i++)
+            weight1[i] = histogram[i] + weight1[i-1];
+        
+        double total_sum=0;
+        for(int i = 0; i < 256; i++)
+            total_sum = total_sum + histogram[i];
+        double[] weight2= new double[256];
+        weight2[0] = total_sum;
+        for(int i = 1; i < 256; i++)
+            weight2[i] = weight2[i-1] - histogram[i - 1];
+        
+        // Calculate the class means: mean1 and mean2
+        double[] histogram_bin_mids= new double[256];
+        for(int i = 0; i < 256; i++)
+            histogram_bin_mids[i] = histogram[i] * bin_mids[i];
+        
+        double[] cumsum_mean1= new double[256];
+        cumsum_mean1[0] = histogram_bin_mids[0];
+        for(int i = 1; i < 256; i++)
+            cumsum_mean1[i] = cumsum_mean1[i-1] + histogram_bin_mids[i];
+        
+        double[] cumsum_mean2= new double[256];
+        cumsum_mean2[0] = histogram_bin_mids[255];
+        for(int i = 1, j=254; i < 256 && j>=0; i++, j--)
+            cumsum_mean2[i] = cumsum_mean2[i-1] + histogram_bin_mids[j];
+        
+        double[] mean1= new double[256];
+        for(int i = 0; i < 256; i++)
+            mean1[i] = cumsum_mean1[i] / weight1[i];
+        
+        double[] mean2= new double[256];
+        for(int i = 0, j = 255; i < 256 && j >= 0; i++, j--)
+            mean2[j] = cumsum_mean2[i] / weight2[j];
+        
+        // Calculate Inter_class_variance
+        double[] Inter_class_variance= new double[256];
+        double dnum = 1000000000;
+        for(int i = 0; i < 255; i++)
+            Inter_class_variance[i] = ((weight1[i] * weight2[i] * (mean1[i] - mean2[i+1])) / dnum) * (mean1[i] - mean2[i+1]); 
+        
+        // Maximize interclass variance
+         double maxi = 0;
+        int getmax = 0;
+        for(int i = 0;i < 255; i++){
+            if(maxi < Inter_class_variance[i]){
+                maxi = Inter_class_variance[i];
+                getmax = i;
+            }
+        }
+        return bin_mids[getmax];
     }
     
     public static WritableImage convert(File ppmFile) {

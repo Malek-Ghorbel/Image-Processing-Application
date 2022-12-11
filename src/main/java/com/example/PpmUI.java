@@ -15,6 +15,7 @@ import java.io.File;
 public class PpmUI extends ImageUI {
     private static HBox hbox ;
     private static HBox hbox2 ;
+    private static HBox hbox3 ;
     private static void updateImage() {
         try {
             PpmConverter.ecrireImagePPM(myObj.toPath().toString());
@@ -84,9 +85,15 @@ public class PpmUI extends ImageUI {
         
         label.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
         Button button= new Button("apply");
-        TextField seuil = new TextField ();
-        seuil.setPromptText("threshhold");
-        seuil.setMaxWidth(80);
+        TextField r = new TextField ();
+        r.setPromptText("R");
+        r.setMaxWidth(40);
+        TextField g = new TextField ();
+        g.setPromptText("G");
+        g.setMaxWidth(40);
+        TextField b = new TextField ();
+        b.setPromptText("B");
+        b.setMaxWidth(40);
         CheckBox c = new CheckBox("OU");
         c.setStyle("-fx-padding: 5 0 0 0;");
         Text error = new Text("please provide the threshhold");
@@ -94,8 +101,10 @@ public class PpmUI extends ImageUI {
         button.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 try {
-                    int i=Integer.parseInt(seuil.getText()); 
-                    PpmConverter.seuillerVariante(i, c.isSelected());
+                    int ir=Integer.parseInt(r.getText()); 
+                    int ig=Integer.parseInt(g.getText()); 
+                    int ib=Integer.parseInt(b.getText()); 
+                    PpmConverter.seuillerVariante(ir,ig,ib, c.isSelected());
                     hbox2.getChildren().remove(error);
                 } catch (NumberFormatException m) {
                     hbox2.getChildren().add(error);
@@ -106,10 +115,70 @@ public class PpmUI extends ImageUI {
         button.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
         
         hbox2.getChildren().add(label);
-        hbox2.getChildren().add(seuil);
+        hbox2.getChildren().add(r);
+        hbox2.getChildren().add(g);
+        hbox2.getChildren().add(b);
         hbox2.getChildren().add(c);
         hbox2.getChildren().add(button);
         return hbox2;
+    }
+
+    private static HBox otsuHBox(VBox root) {
+        hbox3 = new HBox();
+        hbox3.setSpacing(10);
+        Text label = new Text("Otsu :");
+        
+        label.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
+        Button button= new Button("independant");
+        Button button1= new Button("avec OU");
+        Button button2= new Button("avec ET");
+        int r=0,g=1,b=2;
+
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                int seuilR = (int) PpmConverter.otsuRGB( r);
+                int seuilG = (int) PpmConverter.otsuRGB( g);
+                int seuilB = (int) PpmConverter.otsuRGB( b);
+                System.out.println("r : "+seuilR);
+                System.out.println("g : "+seuilG);
+                System.out.println("b : "+seuilB);
+                PpmConverter.seuiller(seuilR, seuilG, seuilB);
+                updateImage();
+            }
+        });
+        button1.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                int seuilR = (int) PpmConverter.otsuRGB( r);
+                int seuilG = (int) PpmConverter.otsuRGB( g);
+                int seuilB = (int) PpmConverter.otsuRGB( b);
+                System.out.println("r : "+seuilR);
+                System.out.println("g : "+seuilG);
+                System.out.println("b : "+seuilB);
+                PpmConverter.seuillerVariante(seuilR, seuilG, seuilB, true);
+                updateImage();
+            }
+        });
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                int seuilR = (int) PpmConverter.otsuRGB( r);
+                int seuilG = (int) PpmConverter.otsuRGB( g);
+                int seuilB = (int) PpmConverter.otsuRGB( b);
+                System.out.println("r : "+seuilR);
+                System.out.println("g : "+seuilG);
+                System.out.println("b : "+seuilB);
+                PpmConverter.seuillerVariante(seuilR, seuilG, seuilB, false);
+                updateImage();
+            }
+        });
+        button.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
+        button1.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
+        button2.setStyle("-fx-font: 18 arial; -fx-base: #b6e7c9;");
+
+        hbox3.getChildren().add(label);
+        hbox3.getChildren().add(button);
+        hbox3.getChildren().add(button1);
+        hbox3.getChildren().add(button2);
+        return hbox3;
     }
 
     public static void loadImage(File imageFile, VBox root) {
@@ -120,6 +189,8 @@ public class PpmUI extends ImageUI {
         
         HBox hbox2 = seuillageVariante(root);
         root.getChildren().add(hbox2);
+
+        root.getChildren().add(otsuHBox(root));
     }
 
     public static void unloadImage(VBox root) {
