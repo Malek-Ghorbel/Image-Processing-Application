@@ -310,4 +310,27 @@ public class PgmTools {
             }
         }
     }
+
+    public static double moyenne() {
+        long sum=0;
+        for(int i=0 ; i<d.length ; i++){
+            for(int j=0; j<d[i].length ; j++) {
+                sum += d[i][j];
+            }
+        }
+        double moy = sum /(d.length *d[0].length) ;
+        return moy ;
+    }
+
+    public static double ecart() {
+        double ecart =0 ;
+        double moy = moyenne();
+        for(int i=0 ; i<d.length ; i++){
+            for(int j=0; j<d[i].length ; j++) {
+                ecart += (d[i][j] - moy)*(d[i][j] - moy);
+            }
+        }
+        ecart = Math.sqrt(ecart / (d.length *d[0].length)) ;
+        return ecart ;
+    }
 }

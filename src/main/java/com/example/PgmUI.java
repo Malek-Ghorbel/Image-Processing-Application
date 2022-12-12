@@ -18,6 +18,7 @@ public class PgmUI extends ImageUI  {
     private static HBox hbox3 ;
     private static HBox hbox4 ;
     private static HBox hbox5 ;
+    private static HBox hbox6 ;
     
     private static void updateImage() {
         myObj = new File("output.pgm");
@@ -34,6 +35,7 @@ public class PgmUI extends ImageUI  {
             imageView.setImage(PgmTools.readImage(file));
             root.getChildren().add(imageView);
             root.getChildren().add(bruitHBox(root));
+            root.getChildren().add(ecarttypeHBox(root));
             root.getChildren().add(tranLineaireHBox(root));
             root.getChildren().add(filtreMoyHBox(root));
             root.getChildren().add(filtreMedianHBox(root));
@@ -50,6 +52,7 @@ public class PgmUI extends ImageUI  {
         root.getChildren().remove(hbox3);
         root.getChildren().remove(hbox4);
         root.getChildren().remove(hbox5);
+        root.getChildren().remove(hbox6);
     }
 
     private static HBox bruitHBox(VBox root) {
@@ -207,16 +210,16 @@ public class PgmUI extends ImageUI  {
         Button button= new Button("apply");
         TextField a1 = new TextField ();
         a1.setPromptText("x1");
-        a1.setMaxWidth(30);
+        a1.setMaxWidth(40);
         TextField b1 = new TextField ();
         b1.setPromptText("y1");
-        b1.setMaxWidth(30);
+        b1.setMaxWidth(40);
         TextField a2 = new TextField ();
         a2.setPromptText("x2");
-        a2.setMaxWidth(30);
+        a2.setMaxWidth(40);
         TextField b2 = new TextField ();
         b2.setPromptText("y2");
-        b2.setMaxWidth(30);
+        b2.setMaxWidth(40);
         Text error = new Text("please provide all the values");
         error.setFill(Color.RED);
         button.setOnAction(new EventHandler<ActionEvent>() {
@@ -246,4 +249,40 @@ public class PgmUI extends ImageUI  {
         hbox5.getChildren().add(button);
         return hbox5;
     }
+
+    private static HBox ecarttypeHBox(VBox root) {
+        hbox6 = new HBox();
+        hbox6.setSpacing(10);
+        Text label = new Text("moyenne / ecart type :");
+        
+        label.setStyle("-fx-font: 18 arial; ");
+        Button button= new Button("moyenne");
+        Text moy = new Text();
+        moy.setStyle("-fx-font: 18 arial; ");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                moy.setText(" " +PgmTools.moyenne());
+            }
+        });
+
+        Button button2= new Button("ecartype");
+        Text rapport = new Text();
+        rapport.setStyle("-fx-font: 18 arial; ");
+        button2.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                rapport.setText(" " +PgmTools.ecart());
+            }
+        });
+
+        button.setStyle("-fx-font: 16 arial; -fx-base: #b6e7c9;");
+        button2.setStyle("-fx-font: 16 arial; -fx-base: #b6e7c9;");
+
+        hbox6.getChildren().add(label);
+        hbox6.getChildren().add(button);
+        hbox6.getChildren().add(moy);
+        hbox6.getChildren().add(button2);
+        hbox6.getChildren().add(rapport   );
+
+        return hbox6;
+    } 
 }
